@@ -1,8 +1,8 @@
 # System channel
 SYS_CHANNEL="sys-channel"
 
-# channel name defaults to "my-channel"
-CHANNEL_NAME="my-channel"
+# channel name defaults
+CHANNEL_NAME="mychannel"
 
 echo $CHANNEL_NAME
 

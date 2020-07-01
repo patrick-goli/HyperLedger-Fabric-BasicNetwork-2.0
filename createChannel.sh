@@ -4,7 +4,7 @@ export PEER0_ORG1_CA=${PWD}/artifacts/channel/crypto-config/peerOrganizations/or
 export PEER0_ORG2_CA=${PWD}/artifacts/channel/crypto-config/peerOrganizations/org2.example.com/peers/peer0.org2.example.com/tls/ca.crt
 export FABRIC_CFG_PATH=${PWD}/artifacts/channel/config/
 
-export CHANNEL_NAME=my-channel
+export CHANNEL_NAME=mychannel
 
 # setGlobalsForOrderer(){
 #     export CORE_PEER_LOCALMSPID="OrdererMSP"
@@ -88,11 +88,11 @@ updateAnchorPeers(){
 
 #removeOldCrypto
 
-#createChannel
+createChannel
 #setGlobalsForPeer0Org1
 #peer channel list 
 #peer channel getinfo -o localhost:7050 --ordererTLSHostnameOverride orderer.example.com -c $CHANNEL_NAME --tls $CORE_PEER_TLS_ENABLED --cafile $ORDERER_CA
-#joinChannel
+joinChannel
 updateAnchorPeers
 
 # @Kouassi

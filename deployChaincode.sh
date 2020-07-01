@@ -54,7 +54,7 @@ presetup() {
     popd
     echo Finished vendoring Go dependencies
 }
-# presetup
+#presetup
 
 CHANNEL_NAME="mychannel"
 CC_RUNTIME_LANGUAGE="golang"
@@ -170,6 +170,7 @@ checkCommitReadyness() {
 
 # checkCommitReadyness
 
+# provide addressess of the endorsing peers
 commitChaincodeDefination() {
     setGlobalsForPeer0Org1
     peer lifecycle chaincode commit -o localhost:7050 --ordererTLSHostnameOverride orderer.example.com \
@@ -225,7 +226,7 @@ chaincodeInvoke() {
     #     --peerAddresses localhost:7051 \
     #     --tlsRootCertFiles $PEER0_ORG1_CA \
     #     --peerAddresses localhost:9051 --tlsRootCertFiles $PEER0_ORG2_CA   \
-    #     -c '{"function": "createCar","Args":["Car-ABCDEEE", "Audi", "R8", "Red", "Pavan"]}'
+    #     -c '{"function": "createCar","Args":["Car-ABCDEEE", "Audi", "R8", "Red", "Kouassi"]}'
 
     ## Init ledger
     peer chaincode invoke -o localhost:7050 \
@@ -238,7 +239,7 @@ chaincodeInvoke() {
         -c '{"function": "initLedger","Args":[]}'
 
     ## Add private data
-    export CAR=$(echo -n "{\"key\":\"1111\", \"make\":\"Tesla\",\"model\":\"Tesla A1\",\"color\":\"White\",\"owner\":\"pavan\",\"price\":\"10000\"}" | base64 | tr -d \\n)
+    export CAR=$(echo -n "{\"key\":\"1111\", \"make\":\"Tesla\",\"model\":\"Tesla A1\",\"color\":\"White\",\"owner\":\"Kouassi\",\"price\":\"10000\"}" | base64 | tr -d \\n)
     peer chaincode invoke -o localhost:7050 \
         --ordererTLSHostnameOverride orderer.example.com \
         --tls $CORE_PEER_TLS_ENABLED \
@@ -256,15 +257,15 @@ chaincodeQuery() {
     setGlobalsForPeer0Org2
 
     # Query all cars
-    # peer chaincode query -C $CHANNEL_NAME -n ${CC_NAME} -c '{"Args":["queryAllCars"]}'
+    peer chaincode query -C $CHANNEL_NAME -n ${CC_NAME} -c '{"Args":["queryAllCars"]}'
 
     # Query Car by Id
-    peer chaincode query -C $CHANNEL_NAME -n ${CC_NAME} -c '{"function": "queryCar","Args":["CAR0"]}'
+    #peer chaincode query -C $CHANNEL_NAME -n ${CC_NAME} -c '{"function": "queryCar","Args":["CAR0"]}'
     #'{"Args":["GetSampleData","Key1"]}'
 
     # Query Private Car by Id
-    # peer chaincode query -C $CHANNEL_NAME -n ${CC_NAME} -c '{"function": "readPrivateCar","Args":["1111"]}'
-    # peer chaincode query -C $CHANNEL_NAME -n ${CC_NAME} -c '{"function": "readCarPrivateDetails","Args":["1111"]}'
+    #peer chaincode query -C $CHANNEL_NAME -n ${CC_NAME} -c '{"function": "readPrivateCar","Args":["1111"]}'
+    #peer chaincode query -C $CHANNEL_NAME -n ${CC_NAME} -c '{"function": "readCarPrivateDetails","Args":["1111"]}'
 }
 
 # chaincodeQuery

@@ -106,7 +106,7 @@ dist
 # Stores VSCode versions used for testing VSCode extensions
 .vscode-test
 
-artifacts/channel/my-channel.tx
+artifacts/channel/mychannel.tx
 genesis.block
 artifacts/channel/Org1MSPanchors.tx
 artifacts/channel/Org2MSPanchors.tx
@@ -128,11 +128,11 @@ api-2.0/wallet
 api-1.4/crypto/org1
 api-1.4/fabric-client-kv-org1
 api-1.4/node_modules
-channel-artifacts/my-channel.block
+channel-artifacts/mychannel.block
 addOrg3/crypto-config/peerOrganizations/org3.example.com
 original_config.pb
 config_block.pb
-channel-artifacts/my-channel.block
+channel-artifacts/mychannel.block
 config_update_in_envelope.json
 config_update.json
 config_update.pb
@@ -146,7 +146,7 @@ addOrderer/crypto-config
 config_update_in_envelope.pb
 config.pb
 org4consenter.json
-addOrg3/scripts/channel-artifacts/my-channel.block
+addOrg3/scripts/channel-artifacts/mychannel.block
 api-2.0/org1-wallet
 api-2.0/org2-wallet
 artifacts/channel/create-certificate-with-ca/crypto-config-ca
