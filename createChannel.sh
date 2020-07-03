@@ -63,12 +63,14 @@ removeOldCrypto(){
 
 
 joinChannel(){
+  echo "=====================JOINING ORG 0 TO THE CHANNEL====================="
     setGlobalsForPeer0Org1
     peer channel join -b ./channel-artifacts/$CHANNEL_NAME.block
     
     setGlobalsForPeer1Org1
     peer channel join -b ./channel-artifacts/$CHANNEL_NAME.block
-    
+
+    echo "=====================JOINING ORG 1 TO THE CHANNEL====================="
     setGlobalsForPeer0Org2
     peer channel join -b ./channel-artifacts/$CHANNEL_NAME.block
     
@@ -97,18 +99,15 @@ updateAnchorPeers
 
 # @Kouassi
 # Join peer0.org3 to the default channel
-if [ 0 -eq 1 ]
-then
-    export PEER0_ORG3_CA=${PWD}/artifacts/channel/crypto-config/peerOrganizations/org3.example.com/peers/peer0.org3.example.com/tls/ca.crt
-    setGlobalsForPeer0Org3(){
-        export CORE_PEER_LOCALMSPID="Org3MSP"
-        export CORE_PEER_TLS_ROOTCERT_FILE=$PEER0_ORG3_CA
-        export CORE_PEER_MSPCONFIGPATH=${PWD}/artifacts/channel/crypto-config/peerOrganizations/org3.example.com/users/Admin@org3.example.com/msp
-        export CORE_PEER_ADDRESS=localhost:19051
-    }
-    setGlobalsForPeer0Org3
 
-    peer channel join -b ./channel-artifacts/$CHANNEL_NAME.block
-
-    peer channel update -o localhost:7050 --ordererTLSHostnameOverride orderer.example.com -c $CHANNEL_NAME -f ./artifacts/channel/${CORE_PEER_LOCALMSPID}anchors.tx --tls $CORE_PEER_TLS_ENABLED --cafile $ORDERER_CA
-fi
+echo "=====================JOINING ORG 3 TO THE CHANNEL====================="
+export PEER0_ORG3_CA=${PWD}/artifacts/channel/crypto-config/peerOrganizations/org3.example.com/peers/peer0.org3.example.com/tls/ca.crt
+setGlobalsForPeer0Org3(){
+    export CORE_PEER_LOCALMSPID="Org3MSP"
+    export CORE_PEER_TLS_ROOTCERT_FILE=$PEER0_ORG3_CA
+    export CORE_PEER_MSPCONFIGPATH=${PWD}/artifacts/channel/crypto-config/peerOrganizations/org3.example.com/users/Admin@org3.example.com/msp
+    export CORE_PEER_ADDRESS=localhost:19051
+}
+setGlobalsForPeer0Org3
+peer channel join -b ./channel-artifacts/$CHANNEL_NAME.block
+peer channel update -o localhost:7050 --ordererTLSHostnameOverride orderer.example.com -c $CHANNEL_NAME -f ./artifacts/channel/${CORE_PEER_LOCALMSPID}anchors.tx --tls $CORE_PEER_TLS_ENABLED --cafile $ORDERER_CA

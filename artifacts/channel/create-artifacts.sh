@@ -12,6 +12,7 @@ chmod -R 0755 ./crypto-config
 rm -rf ./crypto-config
 rm genesis.block $CHANNEL_NAME.tx
 rm -rf ../../channel-artifacts/*
+rm -rf ./*anchors.tx
 
 #Generate Crypto artifactes for organizations
 cryptogen generate --config=./crypto-config.yaml --output=./crypto-config/

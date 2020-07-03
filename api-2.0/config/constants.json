@@ -1,4 +1,5 @@
 {
+    "appSecret": "tyoe4yxfLPq#uywtcvo6cULVPnXy4Fe7CrZ&FqdUwGvem9rLTTs8wuty4e2M^86Db8Qkyqh^VoV5NHTdCVdnho@vWbiq&NCR%5RH^#hkDtUybqn8Ckx^BhzEZQ^Y7Hv5",
     "host": "localhost",
     "port": "4000",
     "jwt_expiretime": "36000",

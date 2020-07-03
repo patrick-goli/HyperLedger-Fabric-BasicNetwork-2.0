@@ -48,7 +48,7 @@ const query = async (channelName, chaincodeName, args, fcn, username, org_name) 
             result = await contract.evaluateTransaction(fcn, args[0]);
 
         } else if (fcn == "readPrivateCar" || fcn == "queryPrivateDataHash"
-        || fcn == "collectionCarPrivateDetails") {
+            || fcn == "collectionCarPrivateDetails") {
             result = await contract.evaluateTransaction(fcn, args[0], args[1]);
             // return result
 
