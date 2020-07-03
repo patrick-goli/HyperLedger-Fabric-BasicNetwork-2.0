@@ -107,11 +107,6 @@ dist
 .vscode-test
 
 fabcar.tar.gz
-chaincode/abstore/
-chaincode/abac/
-chaincode/marbles02/
-chaincode/marbles02_private
-chaincode/sacc/
 chaincode/fabcar/java/build/
 chaincode/fabcar/java/.gradle
 api-2.0/wallet
