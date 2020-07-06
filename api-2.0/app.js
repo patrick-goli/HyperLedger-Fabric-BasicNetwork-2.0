@@ -14,7 +14,7 @@ const constants = require('./config/constants.json')
 
 const host = process.env.HOST || constants.host;
 const port = process.env.PORT || constants.port;
-const secret = process.env.APP_SECRET || constants.appSecret;
+const appSecret = process.env.APP_SECRET || constants.appSecret;
 
 const helper = require('./app/helper')
 const invoke = require('./app/invoke')
@@ -27,9 +27,10 @@ app.use(bodyParser.urlencoded({
     extended: false
 }));
 // set secret variable
-app.set('secret', secret);
+//TODO secure this
+app.set('secret', appSecret);
 app.use(expressJWT({
-    secret: secret
+    secret: appSecret
 }).unless({
     path: ['/users']
 }));

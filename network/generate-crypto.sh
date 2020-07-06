@@ -5,10 +5,19 @@ SYS_CHANNEL="sys-channel"
 CHANNEL_NAME="mychannel"
 
 # Delete existing artifacts
-rm -rf ./organizations/peerOrganizations
-rm -rf ./organizations/ordererOrganizations
-rm ./channel-artifacts/genesis.block
-rm -rf ./channel-artifacts/*.tx
+if [ -d "./organizations/peerOrganizations" ]; then
+    rm -rf ./organizations/peerOrganizations
+fi
+
+if [ -d "./organizations/ordererOrganizations" ]; then
+    rm -rf ./organizations/ordererOrganizations
+fi
+
+if [ -d "./channel-artifacts" ]; then
+    rm ./channel-artifacts/*.block
+    rm -rf ./channel-artifacts/*.tx
+fi
+
 
 echo "#######    Generate Crypto artifactes for organizations  ##########"
 cryptogen generate --config=./organizations/cryptogen/crypto-config-orgs.yaml --output=./organizations

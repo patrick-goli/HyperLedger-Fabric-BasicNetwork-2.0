@@ -2,6 +2,7 @@ export CORE_PEER_TLS_ENABLED=true
 export ORDERER_CA=${PWD}/organizations/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem
 export PEER0_ORG1_CA=${PWD}/organizations/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls/ca.crt
 export PEER0_ORG2_CA=${PWD}/organizations/peerOrganizations/org2.example.com/peers/peer0.org2.example.com/tls/ca.crt
+export PEER0_ORG3_CA=${PWD}/organizations/peerOrganizations/org3.example.com/peers/peer0.org3.example.com/tls/ca.crt
 export FABRIC_CFG_PATH=${PWD}/config/
 
 export CHANNEL_NAME=mychannel
@@ -71,6 +72,14 @@ joinChannel(){
     
     setGlobals 2 1
     peer channel join -b ./channel-artifacts/$CHANNEL_NAME.block
+
+# @Kouassi
+# Join peer0.org3 to the default channel
+
+echo "=====================JOINING ORG 3 TO THE CHANNEL====================="
+
+setGlobals 3 0
+peer channel join -b ./channel-artifacts/$CHANNEL_NAME.block
     
 }
 
@@ -81,22 +90,17 @@ updateAnchorPeers(){
     setGlobals 2 0
     peer channel update -o localhost:7050 --ordererTLSHostnameOverride orderer.example.com -c $CHANNEL_NAME -f ./channel-artifacts/${CORE_PEER_LOCALMSPID}anchors.tx --tls $CORE_PEER_TLS_ENABLED --cafile $ORDERER_CA
     
+	setGlobals 3 0
+	peer channel update -o localhost:7050 --ordererTLSHostnameOverride orderer.example.com -c $CHANNEL_NAME -f ./channel-artifacts/${CORE_PEER_LOCALMSPID}anchors.tx --tls $CORE_PEER_TLS_ENABLED --cafile $ORDERER_CA
 }
 
 echo "Creating channel" $1
 
 createChannel
-#setGlobals 1 0
-#peer channel list 
-#peer channel getinfo -o localhost:7050 --ordererTLSHostnameOverride orderer.example.com -c $CHANNEL_NAME --tls $CORE_PEER_TLS_ENABLED --cafile $ORDERER_CA
 joinChannel
 updateAnchorPeers
 
-# @Kouassi
-# Join peer0.org3 to the default channel
 
-echo "=====================JOINING ORG 3 TO THE CHANNEL====================="
-export PEER0_ORG3_CA=${PWD}/organizations/peerOrganizations/org3.example.com/peers/peer0.org3.example.com/tls/ca.crt
-setGlobals 3 0
-peer channel join -b ./channel-artifacts/$CHANNEL_NAME.block
-peer channel update -o localhost:7050 --ordererTLSHostnameOverride orderer.example.com -c $CHANNEL_NAME -f ./channel-artifacts/${CORE_PEER_LOCALMSPID}anchors.tx --tls $CORE_PEER_TLS_ENABLED --cafile $ORDERER_CA
+#setGlobals 1 0
+peer channel list
+peer channel getinfo -o localhost:7050 --ordererTLSHostnameOverride orderer.example.com -c $CHANNEL_NAME --tls $CORE_PEER_TLS_ENABLED --cafile $ORDERER_CA

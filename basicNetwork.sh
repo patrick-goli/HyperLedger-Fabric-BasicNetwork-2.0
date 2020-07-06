@@ -93,6 +93,12 @@ networkUp() {
   docker-compose -f "$COMPOSE_FILE_BASE" up -d
 }
 
+createChannel(){
+  pushd ./network/ || return
+  ./createChannel.sh "$CHANNEL_NAME"
+  popd || return
+}
+
 ############################################################################
 ############################################################################
 IMAGETAG="latest"
@@ -115,9 +121,7 @@ fi
 if [ "${MODE}" == "up" ]; then
   networkUp
 elif [ "${MODE}" == "createChannel" ]; then
-  pushd ./network/ || return
-  ./createChannel.sh "$CHANNEL_NAME"
-  popd || return
+  createChannel
 elif [ "${MODE}" == "deployCC" ]; then
   deployCC
 elif [ "${MODE}" == "down" ]; then
@@ -129,9 +133,7 @@ elif [ "${MODE}" == "restart" ]; then
   networkUp
 elif [ "${MODE}" == "all" ]; then
   networkUp
-  pushd ./network/ || return
-  ./createChannel.sh "$CHANNEL_NAME"
-  popd || return
+  createChannel
   deployCC
 
 else
