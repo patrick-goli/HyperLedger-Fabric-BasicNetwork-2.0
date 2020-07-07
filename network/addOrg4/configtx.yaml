@@ -21,7 +21,7 @@ Organizations:
         # ID to load the MSP definition as
         ID: Org4MSP
 
-        MSPDir: ../crypto-config/peerOrganizations/org4.example.com/msp
+        MSPDir: ../organizations/peerOrganizations/org4.example.com/msp
 
         Policies:
             Readers:

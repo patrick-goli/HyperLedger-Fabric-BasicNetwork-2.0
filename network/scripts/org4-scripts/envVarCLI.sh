@@ -10,7 +10,9 @@ ORDERER_CA=/opt/gopath/src/github.com/hyperledger/fabric/peer/organizations/orde
 PEER0_ORG1_CA=/opt/gopath/src/github.com/hyperledger/fabric/peer/organizations/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls/ca.crt
 PEER0_ORG2_CA=/opt/gopath/src/github.com/hyperledger/fabric/peer/organizations/peerOrganizations/org2.example.com/peers/peer0.org2.example.com/tls/ca.crt
 PEER0_ORG3_CA=/opt/gopath/src/github.com/hyperledger/fabric/peer/organizations/peerOrganizations/org3.example.com/peers/peer0.org3.example.com/tls/ca.crt
+
 PEER0_ORG4_CA=/opt/gopath/src/github.com/hyperledger/fabric/peer/organizations/peerOrganizations/org4.example.com/peers/peer0.org4.example.com/tls/ca.crt
+
 
 # Set OrdererOrg.Admin globals
 setOrdererGlobals() {
@@ -32,11 +34,13 @@ setGlobals() {
     CORE_PEER_TLS_ROOTCERT_FILE=$PEER0_ORG2_CA
     CORE_PEER_MSPCONFIGPATH=/opt/gopath/src/github.com/hyperledger/fabric/peer/organizations/peerOrganizations/org2.example.com/users/Admin@org2.example.com/msp
     CORE_PEER_ADDRESS=peer0.org2.example.com:9051
+
   elif [ $ORG -eq 3 ]; then
     CORE_PEER_LOCALMSPID="Org3MSP"
     CORE_PEER_TLS_ROOTCERT_FILE=$PEER0_ORG3_CA
     CORE_PEER_MSPCONFIGPATH=/opt/gopath/src/github.com/hyperledger/fabric/peer/organizations/peerOrganizations/org3.example.com/users/Admin@org3.example.com/msp
     CORE_PEER_ADDRESS=peer0.org3.example.com:19051
+
   elif [ $ORG -eq 4 ]; then
     CORE_PEER_LOCALMSPID="Org4MSP"
     CORE_PEER_TLS_ROOTCERT_FILE=$PEER0_ORG4_CA

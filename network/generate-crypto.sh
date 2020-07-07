@@ -14,8 +14,7 @@ if [ -d "./organizations/ordererOrganizations" ]; then
 fi
 
 if [ -d "./channel-artifacts" ]; then
-    rm ./channel-artifacts/*.block
-    rm -rf ./channel-artifacts/*.tx
+    rm -rf ./channel-artifacts/*
 fi
 
 

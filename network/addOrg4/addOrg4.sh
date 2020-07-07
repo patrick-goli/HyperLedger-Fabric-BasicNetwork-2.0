@@ -9,6 +9,10 @@
 # adding a third organization to the network
 #
 
+# prepending $PWD/../bin to PATH to ensure we are picking up the correct binaries
+# this may be commented out to resolve installed version of tools if desired
+export PATH=${PWD}/../../bin:${PWD}:$PATH
+export FABRIC_CFG_PATH=${PWD}
 export VERBOSE=false
 
 # Print the usage message
@@ -63,11 +67,11 @@ function generateOrg4() {
     echo
 
     echo "##########################################################"
-    echo "############ Create Org4 Identities ######################"
+    echo "############ Create Org1 Identities ######################"
     echo "##########################################################"
 
     set -x
-    cryptogen generate --config=org4-crypto.yaml --output="../crypto-config"
+    cryptogen generate --config=org4-crypto.yaml --output="../organizations"
     res=$?
     set +x
     if [ $res -ne 0 ]; then
@@ -125,7 +129,7 @@ function generateOrg4Definition() {
   echo "##########################################################"
    export FABRIC_CFG_PATH=$PWD
    set -x
-   configtxgen -printOrg Org4MSP > ../crypto-config/peerOrganizations/org4.example.com/org4.json
+   configtxgen -printOrg Org4MSP > ../organizations/peerOrganizations/org4.example.com/org4.json
    res=$?
    set +x
    if [ $res -ne 0 ]; then
@@ -138,9 +142,9 @@ function generateOrg4Definition() {
 function Org4Up () {
   # start org4 nodes
   if [ "${DATABASE}" == "couchdb" ]; then
-    IMAGE_TAG=${IMAGETAG} docker-compose -f $COMPOSE_FILE_ORG4 -f $COMPOSE_FILE_COUCH_ORG4 up -d 2>&1
+    IMAGE_TAG=${IMAGETAG} docker-compose -f "$COMPOSE_FILE_ORG4" -f $COMPOSE_FILE_COUCH_ORG4 up -d 2>&1
   else
-    IMAGE_TAG=$IMAGETAG docker-compose -f $COMPOSE_FILE_ORG4 up -d 2>&1
+    IMAGE_TAG=${IMAGETAG} docker-compose -f "$COMPOSE_FILE_ORG4" up -d 2>&1
   fi
   if [ $? -ne 0 ]; then
     echo "ERROR !!!! Unable to start Org4 network"
@@ -152,15 +156,15 @@ function Org4Up () {
 function addOrg4 () {
 
   # If the test network is not up, abort
-  if [ ! -d ../crypto-config/ordererOrganizations ]; then
+  if [ ! -d ../organizations/ordererOrganizations ]; then
     echo
-    echo "ERROR: Please, create a channel first."
+    echo "ERROR: Please, run ./network.sh up createChannel first."
     echo
     exit 1
   fi
 
   # generate artifacts if they don't exist
-  if [ ! -d "../crypto-config/peerOrganizations/org4.example.com" ]; then
+  if [ ! -d "../organizations/peerOrganizations/org4.example.com" ]; then
     generateOrg4
     generateOrg4Definition
   fi
@@ -177,6 +181,7 @@ function addOrg4 () {
   echo "###############################################################"
   echo "####### Generate and submit config tx to add Org4 #############"
   echo "###############################################################"
+
   docker exec Org4cli ./scripts/org4-scripts/step1org4.sh $CHANNEL_NAME $CLI_DELAY $CLI_TIMEOUT $VERBOSE
   if [ $? -ne 0 ]; then
     echo "ERROR !!!! Unable to create config tx"
@@ -197,9 +202,9 @@ function addOrg4 () {
 
 # Tear down running network
 function networkDown () {
-    echo
-#    cd ..
-#    ./network.sh down
+
+    cd ..
+    ./network.sh down
 }
 
 
@@ -209,7 +214,7 @@ OS_ARCH=$(echo "$(uname -s|tr '[:upper:]' '[:lower:]'|sed 's/mingw64_nt.*/window
 # timeout duration - the duration the CLI should wait for a response from
 # another container before giving up
 
-# Using crypto vs CA. default is cryptogen
+# Using crpto vs CA. default is cryptogen
 CRYPTO="cryptogen"
 
 CLI_TIMEOUT=10

@@ -42,7 +42,7 @@ joinChannelWithRetry() {
     COUNTER=$(expr $COUNTER + 1)
     echo "peer0.org${ORG} failed to join the channel, Retry after $DELAY seconds"
     sleep $DELAY
-    joinChannelWithRetry $PEER $ORG
+    joinChannelWithRetry $ORG
   else
     COUNTER=1
   fi

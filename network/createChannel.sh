@@ -103,4 +103,3 @@ updateAnchorPeers
 
 #setGlobals 1 0
 peer channel list
-peer channel getinfo -o localhost:7050 --ordererTLSHostnameOverride orderer.example.com -c $CHANNEL_NAME --tls $CORE_PEER_TLS_ENABLED --cafile $ORDERER_CA

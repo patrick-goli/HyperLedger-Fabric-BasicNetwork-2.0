@@ -45,4 +45,4 @@ PeerOrgs:
         - "localhost"
 
     Users:
-      Count: 1
+      Count: 0
