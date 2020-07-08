@@ -273,6 +273,6 @@ public final class FabCar implements ContractInterface {
         }
 
         stub.delState(key);
-        return String.format("Car %s has been deleted.%n", key);
+        return String.format("Car %s has been successfully deleted.%n", key);
 }
 }

@@ -44,7 +44,7 @@ setGlobals(){
   CHANNEL_NAME=mychannel
   CC_RUNTIME_LANGUAGE="java"
   CC_NAME="fabcar"
-  VERSION="3"
+  VERSION="1"
   CC_SRC_PATH="../chaincode/fabcar/java/build/install/fabcar"
   #CC_SRC_PATH="../chaincode/fabcar/go"
 

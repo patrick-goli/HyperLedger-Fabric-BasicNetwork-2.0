@@ -146,7 +146,9 @@ elif [ "${MODE}" == "restart" ]; then
   networkUp
 elif [ "${MODE}" == "all" ]; then
   networkUp
+  sleep 3
   createChannel
+  sleep 3
   deployCC
 
 else
