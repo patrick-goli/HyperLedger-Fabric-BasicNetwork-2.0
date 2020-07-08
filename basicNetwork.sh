@@ -3,6 +3,7 @@ function printHelp() {
   echo "Usage: "
   echo "  basicnetwork.sh <Mode>"
   echo "    <Mode>"
+  echo "      - 'generate' - generate crypto materials for all orgs and orderers"
   echo "      - 'up' - bring up fabric orderer and peer nodes. No channel is created"
   echo "      - 'createChannel' - create and join a channel after the network is created"
   echo "      - 'deployCC' - deploy the fabcar chaincode on the channel"
@@ -11,10 +12,13 @@ function printHelp() {
 }
 
 generateCryptoMaterials() {
-  echo "=====================GENERATING CRYPTO MATERIALS====================="
-  pushd ./network/ || return
-  ./generate-crypto.sh
-  popd || return
+  # generate artifacts if they don't exist
+  if [ ! -d "network/organizations/peerOrganizations" ]; then
+    echo "=====================GENERATING CRYPTO MATERIALS====================="
+    pushd ./network/ || return
+    ./generate-crypto.sh
+    popd || return
+  fi
 }
 
 deployCC() {
@@ -99,9 +103,7 @@ function networkDown() {
 networkUp() {
   checkPrereqs
   # generate artifacts if they don't exist
-  if [ ! -d "network/organizations/peerOrganizations" ]; then
-    generateCryptoMaterials
-  fi
+  generateCryptoMaterials
   echo "=====================BRINGING UP THE NETWORK====================="
   docker-compose -f "$COMPOSE_FILE_BASE" up -d
 }
@@ -131,7 +133,10 @@ else
   shift
 fi
 
-if [ "${MODE}" == "up" ]; then
+
+if [ "${MODE}" == "generate" ]; then
+  generateCryptoMaterials
+elif [ "${MODE}" == "up" ]; then
   networkUp
 elif [ "${MODE}" == "createChannel" ]; then
   createChannel
