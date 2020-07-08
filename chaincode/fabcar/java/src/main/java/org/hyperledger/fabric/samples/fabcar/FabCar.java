@@ -131,7 +131,7 @@ public final class FabCar implements ContractInterface {
         Car car = new Car(make, model, color, owner);
         carState = genson.serialize(car);
         stub.putStringState(key, carState);
-
+        //stub.getTxId();
         return car;
     }
 
@@ -200,13 +200,13 @@ public final class FabCar implements ContractInterface {
     @Transaction
     public String getHistoryForAsset(final Context ctx, final String key) {
         ChaincodeStub stub = ctx.getStub();
-
-        String carState = stub.getStringState(key);
-        if (carState.isEmpty()) {
-            String errorMessage = String.format("Car %s does not exist", key);
-            System.out.println(errorMessage);
-            throw new ChaincodeException(errorMessage, FabCarErrors.CAR_NOT_FOUND.toString());
-        }
+// If Car is deleted thisi will be empty enven if we have a well defined history for that car
+//        String carState = stub.getStringState(key);
+//        if (carState.isEmpty()) {
+//            String errorMessage = String.format("Car %s does not exist", key);
+//            System.out.println(errorMessage);
+//            throw new ChaincodeException(errorMessage, FabCarErrors.CAR_NOT_FOUND.toString());
+//        }
 
         QueryResultsIterator<KeyModification> results = stub.getHistoryForKey(key);
         if (results == null) {
@@ -244,9 +244,8 @@ public final class FabCar implements ContractInterface {
             bufferMemberWritten = true;
         }
         buffer.append("]");
-        String res=buffer.toString();
-
-        if(res.equals("[]")){
+        String res = buffer.toString();
+        if (res.equals("[]")) {
             String errorMessage = String.format("Car %s does not exist", key);
             System.out.println(errorMessage);
             throw new ChaincodeException(errorMessage, FabCarErrors.CAR_NOT_FOUND.toString());
@@ -258,11 +257,11 @@ public final class FabCar implements ContractInterface {
     /**
      * Delete a car
      *
-     * @param ctx      the transaction context
-     * @param key      the key
+     * @param ctx the transaction context
+     * @param key the key
      */
     @Transaction()
-    public String deleteCar(final Context ctx, final String key){
+    public String deleteCar(final Context ctx, final String key) {
         ChaincodeStub stub = ctx.getStub();
 
         String carState = stub.getStringState(key);
@@ -273,6 +272,6 @@ public final class FabCar implements ContractInterface {
         }
 
         stub.delState(key);
-        return String.format("Car %s has been successfully deleted.%n", key);
-}
+        return String.format("{\"Message\":\"Car '%s' has been successfully deleted.\", \"TxId\":\"%s\"}", key, stub.getTxId());
+    }
 }

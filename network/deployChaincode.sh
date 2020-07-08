@@ -46,7 +46,6 @@ setGlobals(){
   CC_NAME="fabcar"
   VERSION="1"
   CC_SRC_PATH="../chaincode/fabcar/java/build/install/fabcar"
-  #CC_SRC_PATH="../chaincode/fabcar/go"
 
 presetup() {
   echo Compiling Java code ...
@@ -56,14 +55,6 @@ presetup() {
   echo Finished compiling Java code
 }
 
-
-#presetup() {
-#    echo Vendoring Go dependencies ...
-#    pushd ../chaincode/fabcar/go
-#    GO111MODULE=on go mod vendor
-#    popd
-#    echo Finished vendoring Go dependencies
-#}
 
 packageChaincode() {
   rm -rf ${CC_NAME}.tar.gz
@@ -78,10 +69,6 @@ installChaincode() {
   setGlobals 1 0
   peer lifecycle chaincode install ${CC_NAME}.tar.gz
   echo "===================== Chaincode is installed on peer0.org1 ===================== "
-
-  # setGlobalsForPeer1Org1
-  # peer lifecycle chaincode install ${CC_NAME}.tar.gz
-  # echo "===================== Chaincode is installed on peer1.org1 ===================== "
 
   setGlobals 2 0
   peer lifecycle chaincode install ${CC_NAME}.tar.gz
@@ -186,9 +173,10 @@ chaincodeQuery() {
     --peerAddresses localhost:7051 --tlsRootCertFiles "$PEER0_ORG1_CA" \
     --peerAddresses localhost:9051 --tlsRootCertFiles "$PEER0_ORG2_CA" \
     --peerAddresses localhost:19051 --tlsRootCertFiles "$PEER0_ORG3_CA" \
-    -c '{"function": "createCar","Args":["CAR003", "Audi", "R8", "Blue", "Bob"]}'
+    -c '{"function": "createCar","Args":["CAR001", "Tesla", "Model S", "Grey", "Bob"]}'
 
   #Query all cars
+  #sleep 5
   #peer chaincode query -C $CHANNEL_NAME -n ${CC_NAME} -c '{"Args":["queryAllCars"]}'
 
   #Change Car owner
@@ -202,13 +190,14 @@ chaincodeQuery() {
     --peerAddresses localhost:7051 --tlsRootCertFiles "$PEER0_ORG1_CA" \
     --peerAddresses localhost:9051 --tlsRootCertFiles "$PEER0_ORG2_CA" \
     --peerAddresses localhost:19051 --tlsRootCertFiles "$PEER0_ORG3_CA" \
-    -c '{"function": "changeCarOwner","Args":["CAR003", "Alice"]}'
+    -c '{"function": "changeCarOwner","Args":["CAR001", "Alice"]}'
 
   #wait for concensus and propagation
   sleep 5
   setGlobals 1 0
-  peer chaincode query -C $CHANNEL_NAME -n ${CC_NAME} -c '{"function": "getHistoryForAsset","Args":["CAR003"]}'
+  peer chaincode query -C $CHANNEL_NAME -n ${CC_NAME} -c '{"function": "getHistoryForAsset","Args":["CAR001"]}'
 
+  # Delete car
   sleep 5
   setGlobals 3 0
   peer chaincode invoke -o localhost:7050 \
@@ -219,15 +208,15 @@ chaincodeQuery() {
     --peerAddresses localhost:7051 --tlsRootCertFiles "$PEER0_ORG1_CA" \
     --peerAddresses localhost:9051 --tlsRootCertFiles "$PEER0_ORG2_CA" \
     --peerAddresses localhost:19051 --tlsRootCertFiles "$PEER0_ORG3_CA" \
-    -c '{"function": "deleteCar","Args":["CAR003"]}'
+    -c '{"function": "deleteCar","Args":["CAR001"]}'
 
-  #Query Car by Id
+  # check history for deletion
   sleep 5
-  peer chaincode query -C $CHANNEL_NAME -n ${CC_NAME} -c '{"function": "queryCar","Args":["CAR003"]}'
+  peer chaincode query -C $CHANNEL_NAME -n ${CC_NAME} -c '{"function": "getHistoryForAsset","Args":["CAR001"]}'
 
 }
 
-#Run this function if you add any new dependency in chaincode
+#Run this function if you add any new lines of code in chaincode
 presetup
 
 packageChaincode
