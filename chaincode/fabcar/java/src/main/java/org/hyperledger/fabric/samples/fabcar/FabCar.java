@@ -5,6 +5,7 @@
 package org.hyperledger.fabric.samples.fabcar;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.hyperledger.fabric.contract.Context;
@@ -17,6 +18,7 @@ import org.hyperledger.fabric.contract.annotation.License;
 import org.hyperledger.fabric.contract.annotation.Transaction;
 import org.hyperledger.fabric.shim.ChaincodeException;
 import org.hyperledger.fabric.shim.ChaincodeStub;
+import org.hyperledger.fabric.shim.ledger.KeyModification;
 import org.hyperledger.fabric.shim.ledger.KeyValue;
 import org.hyperledger.fabric.shim.ledger.QueryResultsIterator;
 
@@ -106,9 +108,9 @@ public final class FabCar implements ContractInterface {
     /**
      * Creates a new car on the ledger.
      *
-     * @param ctx the transaction context
-     * @param key the key for the new car
-     * @param make the make of the new car
+     * @param ctx   the transaction context
+     * @param key   the key for the new car
+     * @param make  the make of the new car
      * @param model the model of the new car
      * @param color the color of the new car
      * @param owner the owner of the new car
@@ -116,7 +118,7 @@ public final class FabCar implements ContractInterface {
      */
     @Transaction()
     public Car createCar(final Context ctx, final String key, final String make, final String model,
-            final String color, final String owner) {
+                         final String color, final String owner) {
         ChaincodeStub stub = ctx.getStub();
 
         String carState = stub.getStringState(key);
@@ -149,7 +151,7 @@ public final class FabCar implements ContractInterface {
 
         QueryResultsIterator<KeyValue> results = stub.getStateByRange(startKey, endKey);
 
-        for (KeyValue result: results) {
+        for (KeyValue result : results) {
             Car car = genson.deserialize(result.getStringValue(), Car.class);
             queryResults.add(new CarQueryResult(result.getKey(), car));
         }
@@ -162,8 +164,8 @@ public final class FabCar implements ContractInterface {
     /**
      * Changes the owner of a car on the ledger.
      *
-     * @param ctx the transaction context
-     * @param key the key
+     * @param ctx      the transaction context
+     * @param key      the key
      * @param newOwner the new owner
      * @return the updated Car
      */
@@ -187,4 +189,90 @@ public final class FabCar implements ContractInterface {
 
         return newCar;
     }
+
+    /**
+     * Get an history of all transactions for a car
+     *
+     * @param ctx the transaction context
+     * @param key the key
+     * @return The history of the selected car
+     */
+    @Transaction
+    public String getHistoryForAsset(final Context ctx, final String key) {
+        ChaincodeStub stub = ctx.getStub();
+
+        String carState = stub.getStringState(key);
+        if (carState.isEmpty()) {
+            String errorMessage = String.format("Car %s does not exist", key);
+            System.out.println(errorMessage);
+            throw new ChaincodeException(errorMessage, FabCarErrors.CAR_NOT_FOUND.toString());
+        }
+
+        QueryResultsIterator<KeyModification> results = stub.getHistoryForKey(key);
+        if (results == null) {
+            String errorMessage = String.format("Car %s does not exist", key);
+            System.out.println(errorMessage);
+            throw new ChaincodeException(errorMessage, FabCarErrors.CAR_NOT_FOUND.toString());
+        }
+        StringBuilder buffer = new StringBuilder("["); // buffer is a JSON array containing historic values for the marble
+        boolean bufferMemberWritten = false;
+        for (KeyModification result : results) {
+            // Add a comma before array members, suppress it for the first array member
+            if (bufferMemberWritten) {
+                buffer.append(",");
+            }
+            buffer.append("{\"TxId\":");
+            buffer.append("\"" + result.getTxId() + "\"");
+
+            buffer.append(", \"Value\":");
+            // if it was a delete operation on given key, then we need to set the
+            //corresponding value null. Else, we will write the response.Value
+            //as-is (as the Value itself a JSON marble)
+            if (result.isDeleted()) {
+                buffer.append("null");
+            } else {
+                buffer.append(result.getStringValue());
+            }
+
+            buffer.append(", \"Timestamp\":");
+            buffer.append("\"" + result.getTimestamp() + "\"");
+
+            buffer.append(", \"IsDeleted\":");
+            buffer.append("\"" + result.isDeleted() + "\"");
+
+            buffer.append("}");
+            bufferMemberWritten = true;
+        }
+        buffer.append("]");
+        String res=buffer.toString();
+
+        if(res.equals("[]")){
+            String errorMessage = String.format("Car %s does not exist", key);
+            System.out.println(errorMessage);
+            throw new ChaincodeException(errorMessage, FabCarErrors.CAR_NOT_FOUND.toString());
+        }
+
+        return res;
+    }
+
+    /**
+     * Delete a car
+     *
+     * @param ctx      the transaction context
+     * @param key      the key
+     */
+    @Transaction()
+    public String deleteCar(final Context ctx, final String key){
+        ChaincodeStub stub = ctx.getStub();
+
+        String carState = stub.getStringState(key);
+        if (carState.isEmpty()) {
+            String errorMessage = String.format("Car %s does not exist", key);
+            System.out.println(errorMessage);
+            throw new ChaincodeException(errorMessage, FabCarErrors.CAR_NOT_FOUND.toString());
+        }
+
+        stub.delState(key);
+        return String.format("Car %s has been deleted.%n", key);
+}
 }

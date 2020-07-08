@@ -260,4 +260,39 @@ public final class FabCarTest {
             assertThat(((ChaincodeException) thrown).getPayload()).isEqualTo("CAR_NOT_FOUND".getBytes());
         }
     }
+
+
+    @Nested
+    class GetHistoryForAssetTransaction {
+
+        @Test
+        public void whenCarExists() {
+            FabCar contract = new FabCar();
+            Context ctx = mock(Context.class);
+            ChaincodeStub stub = mock(ChaincodeStub.class);
+            when(ctx.getStub()).thenReturn(stub);
+            when(stub.getStringState("CAR0"))
+                    .thenReturn("{\"color\":\"blue\",\"make\":\"Toyota\",\"model\":\"Prius\",\"owner\":\"Tomoko\"}");
+
+            String history = contract.getHistoryForAsset(ctx, "CAR0");
+            System.out.println("history:\n" + history);
+        }
+
+        @Test
+        public void whenCarDoesNotExist() {
+            FabCar contract = new FabCar();
+            Context ctx = mock(Context.class);
+            ChaincodeStub stub = mock(ChaincodeStub.class);
+            when(ctx.getStub()).thenReturn(stub);
+            when(stub.getStringState("CAR0")).thenReturn("");
+
+            Throwable thrown = catchThrowable(() -> {
+                contract.changeCarOwner(ctx, "CAR0", "Dr Evil");
+            });
+
+            assertThat(thrown).isInstanceOf(ChaincodeException.class).hasNoCause()
+                    .hasMessage("Car CAR0 does not exist");
+            assertThat(((ChaincodeException) thrown).getPayload()).isEqualTo("CAR_NOT_FOUND".getBytes());
+        }
+    }
 }
