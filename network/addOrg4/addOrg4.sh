@@ -158,7 +158,7 @@ function addOrg4 () {
   # If the test network is not up, abort
   if [ ! -d ../organizations/ordererOrganizations ]; then
     echo
-    echo "ERROR: Please, run ./network.sh up createChannel first."
+    echo "ERROR: Please, run ./basicNetwork.sh up createChannel first."
     echo
     exit 1
   fi
@@ -203,8 +203,8 @@ function addOrg4 () {
 # Tear down running network
 function networkDown () {
 
-    cd ..
-    ./network.sh down
+    cd ../..
+    ./basicNetwork.sh down
 }
 
 

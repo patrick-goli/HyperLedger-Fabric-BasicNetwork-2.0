@@ -77,10 +77,23 @@ function networkDown() {
   docker-compose -f "$COMPOSE_FILE_BASE" down --volumes --remove-orphans
 
   # Delete existing artifacts
-  rm -rf ./network/organizations/peerOrganizations
-  rm -rf ./network/organizations/ordererOrganizations
-  # remove channel and script artifacts
-  rm -rf ./network/channel-artifacts log.txt fabcar.tar.gz
+  if [ -d "./network/organizations/peerOrganizations" ]; then
+      rm -rf ./network/organizations/peerOrganizations
+  fi
+
+  if [ -d "./network/organizations/ordererOrganizations" ]; then
+      rm -rf ./network/organizations/ordererOrganizations
+  fi
+
+  if [ -d "./network/channel-artifacts" ]; then
+      rm -rf ./network/channel-artifacts/*
+  fi
+
+  if [ -d "./api-2.0/config" ]; then
+      rm ./api-2.0/config/connection-org*
+  fi
+
+  rm -f ./network/log.txt ./network/fabcar.tar.gz
 }
 
 networkUp() {
@@ -101,7 +114,7 @@ createChannel(){
 
 ############################################################################
 ############################################################################
-IMAGETAG="latest"
+IMAGETAG="2.1"
 # channel name defaults to "mychannel"
 CHANNEL_NAME="mychannel"
 # use this as the default docker-compose yaml definition

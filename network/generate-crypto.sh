@@ -17,6 +17,10 @@ if [ -d "./channel-artifacts" ]; then
     rm -rf ./channel-artifacts/*
 fi
 
+if [ -d "../api-2.0/config" ]; then
+    rm ../api-2.0/config/connection-org*
+fi
+
 
 echo "#######    Generate Crypto artifactes for organizations  ##########"
 cryptogen generate --config=./organizations/cryptogen/crypto-config-orgs.yaml --output=./organizations
@@ -39,3 +43,6 @@ configtxgen -profile BasicChannel -configPath . -outputAnchorPeersUpdate ./chann
 # @Kouassi
 echo "#######    Generating anchor peer update for Org3MSP  ##########"
 configtxgen -profile BasicChannel -configPath . -outputAnchorPeersUpdate ./channel-artifacts/Org3MSPanchors.tx -channelID $CHANNEL_NAME -asOrg Org3MSP
+
+echo "########## Generate connection profile files for Org1, Org2 and Org3 ##########"
+./ccp-generate.sh

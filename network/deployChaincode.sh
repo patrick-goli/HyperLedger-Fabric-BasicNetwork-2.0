@@ -44,7 +44,7 @@ setGlobals(){
   CHANNEL_NAME=mychannel
   CC_RUNTIME_LANGUAGE="java"
   CC_NAME="fabcar"
-  VERSION="1"
+  VERSION="3"
   CC_SRC_PATH="../chaincode/fabcar/java/build/install/fabcar"
   #CC_SRC_PATH="../chaincode/fabcar/go"
 
@@ -175,28 +175,59 @@ chaincodeInvoke() {
 
 chaincodeQuery() {
   echo "===================== query chaincode ===================== "
+  setGlobals 1 0
+
+  #Create Car
+  peer chaincode invoke -o localhost:7050 \
+    --ordererTLSHostnameOverride orderer.example.com \
+    --tls $CORE_PEER_TLS_ENABLED \
+    --cafile "$ORDERER_CA" \
+    -C $CHANNEL_NAME -n ${CC_NAME} \
+    --peerAddresses localhost:7051 --tlsRootCertFiles "$PEER0_ORG1_CA" \
+    --peerAddresses localhost:9051 --tlsRootCertFiles "$PEER0_ORG2_CA" \
+    --peerAddresses localhost:19051 --tlsRootCertFiles "$PEER0_ORG3_CA" \
+    -c '{"function": "createCar","Args":["CAR003", "Audi", "R8", "Blue", "Bob"]}'
+
+  #Query all cars
+  #peer chaincode query -C $CHANNEL_NAME -n ${CC_NAME} -c '{"Args":["queryAllCars"]}'
+
+  #Change Car owner
+  sleep 5
   setGlobals 2 0
+  peer chaincode invoke -o localhost:7050 \
+    --ordererTLSHostnameOverride orderer.example.com \
+    --tls $CORE_PEER_TLS_ENABLED \
+    --cafile "$ORDERER_CA" \
+    -C $CHANNEL_NAME -n ${CC_NAME} \
+    --peerAddresses localhost:7051 --tlsRootCertFiles "$PEER0_ORG1_CA" \
+    --peerAddresses localhost:9051 --tlsRootCertFiles "$PEER0_ORG2_CA" \
+    --peerAddresses localhost:19051 --tlsRootCertFiles "$PEER0_ORG3_CA" \
+    -c '{"function": "changeCarOwner","Args":["CAR003", "Alice"]}'
 
-  # Create Car
-   peer chaincode invoke -o localhost:7050 \
-       --ordererTLSHostnameOverride orderer.example.com \
-       --tls $CORE_PEER_TLS_ENABLED \
-       --cafile "$ORDERER_CA" \
-       -C $CHANNEL_NAME -n ${CC_NAME}  \
-      --peerAddresses localhost:7051 --tlsRootCertFiles "$PEER0_ORG1_CA" \
-      --peerAddresses localhost:9051 --tlsRootCertFiles "$PEER0_ORG2_CA" \
-      --peerAddresses localhost:19051 --tlsRootCertFiles "$PEER0_ORG3_CA" \
-       -c '{"function": "createCar","Args":["Car-123", "Audi", "R8", "Red", "Kouassi"]}'
-  # Query all cars
-  peer chaincode query -C $CHANNEL_NAME -n ${CC_NAME} -c '{"Args":["queryAllCars"]}'
+  #wait for concensus and propagation
+  sleep 5
+  setGlobals 1 0
+  peer chaincode query -C $CHANNEL_NAME -n ${CC_NAME} -c '{"function": "getHistoryForAsset","Args":["CAR003"]}'
 
-  # Query Car by Id
-  #peer chaincode query -C $CHANNEL_NAME -n ${CC_NAME} -c '{"function": "queryCar","Args":["CAR0"]}'
-  #'{"Args":["GetSampleData","Key1"]}'
+  sleep 5
+  setGlobals 3 0
+  peer chaincode invoke -o localhost:7050 \
+    --ordererTLSHostnameOverride orderer.example.com \
+    --tls $CORE_PEER_TLS_ENABLED \
+    --cafile "$ORDERER_CA" \
+    -C $CHANNEL_NAME -n ${CC_NAME} \
+    --peerAddresses localhost:7051 --tlsRootCertFiles "$PEER0_ORG1_CA" \
+    --peerAddresses localhost:9051 --tlsRootCertFiles "$PEER0_ORG2_CA" \
+    --peerAddresses localhost:19051 --tlsRootCertFiles "$PEER0_ORG3_CA" \
+    -c '{"function": "deleteCar","Args":["CAR003"]}'
+
+  #Query Car by Id
+  sleep 5
+  peer chaincode query -C $CHANNEL_NAME -n ${CC_NAME} -c '{"function": "queryCar","Args":["CAR003"]}'
 
 }
 
-# Run this function if you add any new dependency in chaincode
+#Run this function if you add any new dependency in chaincode
 presetup
 
 packageChaincode
@@ -210,11 +241,12 @@ checkCommitReadyness 2
 # @ Kouassi
 approveForMyOrg 3
 checkCommitReadyness 3
-# @ Kouassi
+
 commitChaincodeDefination
 queryCommitted
-#chaincodeInvokeInit
-sleep 4
+sleep 5
+chaincodeInvokeInit
+sleep 5
 chaincodeInvoke
 sleep 1
 chaincodeQuery
