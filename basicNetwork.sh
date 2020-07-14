@@ -97,6 +97,10 @@ function networkDown() {
       rm ./api-2.0/config/connection-org*
   fi
 
+  if [ -d "./api-2.0/*-wallet" ]; then
+      rm rf ./api-2.0/*-wallet
+  fi
+
   rm -f ./network/log.txt ./network/fabcar.tar.gz
 }
 

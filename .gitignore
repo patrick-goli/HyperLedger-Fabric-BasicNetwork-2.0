@@ -113,8 +113,7 @@ api-2.0/config/*.json
 api-2.0/config/*.yaml
 api-2.0/crypto/org1
 api-2.0/node_modules
-api-2.0/org1-wallet
-api-2.0/org2-wallet
+api-2.0/*-wallet
 
 /network/channel-artifacts/
 original_config.pb
