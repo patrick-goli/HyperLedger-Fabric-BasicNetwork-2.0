@@ -28,7 +28,6 @@ app.use(bodyParser.urlencoded({
     extended: false
 }));
 // set secret variable
-//TODO secure this
 app.set('secret', appSecret);
 app.use(expressJWT({
     secret: appSecret

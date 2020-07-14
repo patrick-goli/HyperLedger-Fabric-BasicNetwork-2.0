@@ -1,0 +1,15 @@
+{   "appSecret": "",
+    "host": "localhost",
+    "port": "8000",
+    "jwt_expiretime": "36000",
+    "channelName": "mychannel",
+    "CC_SRC_PATH": "artifacts",
+    "eventWaitTime": "30000",
+    "admins": [
+        {
+            "username": "admin",
+            "secret": "adminPassword"
+        }
+    ]
+}
+
