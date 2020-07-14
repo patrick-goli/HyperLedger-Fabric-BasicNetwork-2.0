@@ -111,8 +111,8 @@ chaincode/fabcar/java/build/
 chaincode/fabcar/java/.gradle
 api-2.0/wallet
 api-2.0/config/
+api-2.0/config/constants.json
 api-2.0/crypto/org1
-api-2.0/fabric-client-kv-org1
 api-2.0/node_modules
 api-2.0/org1-wallet
 api-2.0/org2-wallet

@@ -116,7 +116,7 @@ createChannel(){
 
 ############################################################################
 ############################################################################
-IMAGETAG="2.1"
+IMAGETAG="2.1.1"
 # channel name defaults to "mychannel"
 CHANNEL_NAME="mychannel"
 # use this as the default docker-compose yaml definition
@@ -145,15 +145,20 @@ elif [ "${MODE}" == "deployCC" ]; then
 elif [ "${MODE}" == "down" ]; then
   echo "Shutting down..."
   networkDown
+elif [ "${MODE}" == "clean" ]; then
+  echo "Shutting down..."
+  networkDown
+  docker rm -f $(docker ps -a)
+  docker network prune -f
 elif [ "${MODE}" == "restart" ]; then
   echo "Restarting..."
   networkDown
   networkUp
 elif [ "${MODE}" == "all" ]; then
   networkUp
-  sleep 3
+  sleep 5
   createChannel
-  sleep 3
+  sleep 5
   deployCC
 
 else

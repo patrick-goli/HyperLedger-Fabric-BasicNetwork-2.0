@@ -11,6 +11,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -18,6 +19,7 @@ import java.util.List;
 import org.hyperledger.fabric.contract.Context;
 import org.hyperledger.fabric.shim.ChaincodeException;
 import org.hyperledger.fabric.shim.ChaincodeStub;
+import org.hyperledger.fabric.shim.ledger.KeyModification;
 import org.hyperledger.fabric.shim.ledger.KeyValue;
 import org.hyperledger.fabric.shim.ledger.QueryResultsIterator;
 import org.junit.jupiter.api.Nested;
@@ -92,9 +94,7 @@ public final class FabCarTest {
         FabCar contract = new FabCar();
         Context ctx = mock(Context.class);
 
-        Throwable thrown = catchThrowable(() -> {
-            contract.unknownTransaction(ctx);
-        });
+        Throwable thrown = catchThrowable(() -> contract.unknownTransaction(ctx));
 
         assertThat(thrown).isInstanceOf(ChaincodeException.class).hasNoCause()
                 .hasMessage("Undefined contract method called");
@@ -128,9 +128,7 @@ public final class FabCarTest {
             when(ctx.getStub()).thenReturn(stub);
             when(stub.getStringState("CAR0")).thenReturn("");
 
-            Throwable thrown = catchThrowable(() -> {
-                contract.queryCar(ctx, "CAR0");
-            });
+            Throwable thrown = catchThrowable(() -> contract.queryCar(ctx, "CAR0"));
 
             assertThat(thrown).isInstanceOf(ChaincodeException.class).hasNoCause()
                     .hasMessage("Car CAR0 does not exist");
@@ -182,9 +180,7 @@ public final class FabCarTest {
             when(stub.getStringState("CAR0"))
                     .thenReturn("{\"color\":\"blue\",\"make\":\"Toyota\",\"model\":\"Prius\",\"owner\":\"Tomoko\"}");
 
-            Throwable thrown = catchThrowable(() -> {
-                contract.createCar(ctx, "CAR0", "Nissan", "Leaf", "green", "Siobhán");
-            });
+            Throwable thrown = catchThrowable(() -> contract.createCar(ctx, "CAR0", "Nissan", "Leaf", "green", "Siobhán"));
 
             assertThat(thrown).isInstanceOf(ChaincodeException.class).hasNoCause()
                     .hasMessage("Car CAR0 already exists");
@@ -215,7 +211,7 @@ public final class FabCarTest {
 
         CarQueryResult[] cars = contract.queryAllCars(ctx);
 
-        final List<CarQueryResult> expectedCars = new ArrayList<CarQueryResult>();
+        final List<CarQueryResult> expectedCars = new ArrayList<>();
         expectedCars.add(new CarQueryResult("CAR0", new Car("Toyota", "Prius", "blue", "Tomoko")));
         expectedCars.add(new CarQueryResult("CAR1", new Car("Ford", "Mustang", "red", "Brad")));
         expectedCars.add(new CarQueryResult("CAR2", new Car("Hyundai", "Tucson", "green", "Jin Soo")));
@@ -251,9 +247,7 @@ public final class FabCarTest {
             when(ctx.getStub()).thenReturn(stub);
             when(stub.getStringState("CAR0")).thenReturn("");
 
-            Throwable thrown = catchThrowable(() -> {
-                contract.changeCarOwner(ctx, "CAR0", "Dr Evil");
-            });
+            Throwable thrown = catchThrowable(() -> contract.changeCarOwner(ctx, "CAR0", "Dr Evil"));
 
             assertThat(thrown).isInstanceOf(ChaincodeException.class).hasNoCause()
                     .hasMessage("Car CAR0 does not exist");
@@ -265,17 +259,50 @@ public final class FabCarTest {
     @Nested
     class GetHistoryForAssetTransaction {
 
+/*
         @Test
         public void whenCarExists() {
             FabCar contract = new FabCar();
             Context ctx = mock(Context.class);
             ChaincodeStub stub = mock(ChaincodeStub.class);
             when(ctx.getStub()).thenReturn(stub);
-            when(stub.getStringState("CAR0"))
-                    .thenReturn("{\"color\":\"blue\",\"make\":\"Toyota\",\"model\":\"Prius\",\"owner\":\"Tomoko\"}");
+            QueryResultsIterator<KeyModification> results =
+            //TODO result is NULL why ?
+            when(stub.getHistoryForKey("CAR0")).thenReturn(results);
 
             String history = contract.getHistoryForAsset(ctx, "CAR0");
             System.out.println("history:\n" + history);
+        }
+*/
+        @Test
+        public void whenCarDoesNotExist() {
+            FabCar contract = new FabCar();
+            Context ctx = mock(Context.class);
+            ChaincodeStub stub = mock(ChaincodeStub.class);
+            when(ctx.getStub()).thenReturn(stub);
+            when(stub.getStringState("CAR0")).thenReturn("");
+
+            Throwable thrown = catchThrowable(() -> contract.getHistoryForAsset(ctx, "CAR0"));
+
+            assertThat(thrown).isInstanceOf(ChaincodeException.class).hasNoCause()
+                    .hasMessage("Car CAR0 does not exist");
+            assertThat(((ChaincodeException) thrown).getPayload()).isEqualTo("CAR_NOT_FOUND".getBytes());
+        }
+    }
+
+
+    @Nested
+    class deleteCarTransaction {
+
+        @Test
+        public void whenCarExists() {
+            FabCar contract = new FabCar();
+            Context ctx = mock(Context.class);
+            ChaincodeStub stub = mock(ChaincodeStub.class);
+            when(ctx.getStub()).thenReturn(stub);
+            when(stub.getStringState("CAR0")).thenReturn("STATE");
+            String res = contract.deleteCar(ctx,"CAR0");
+            assertThat(res).isEqualTo("Car 'CAR0' has been successfully deleted.");
         }
 
         @Test
@@ -286,9 +313,7 @@ public final class FabCarTest {
             when(ctx.getStub()).thenReturn(stub);
             when(stub.getStringState("CAR0")).thenReturn("");
 
-            Throwable thrown = catchThrowable(() -> {
-                contract.changeCarOwner(ctx, "CAR0", "Dr Evil");
-            });
+            Throwable thrown = catchThrowable(() -> contract.deleteCar(ctx, "CAR0"));
 
             assertThat(thrown).isInstanceOf(ChaincodeException.class).hasNoCause()
                     .hasMessage("Car CAR0 does not exist");

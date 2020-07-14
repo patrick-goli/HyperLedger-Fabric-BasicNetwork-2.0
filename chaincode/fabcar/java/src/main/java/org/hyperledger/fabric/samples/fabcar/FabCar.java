@@ -5,7 +5,6 @@
 package org.hyperledger.fabric.samples.fabcar;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import org.hyperledger.fabric.contract.Context;
@@ -18,6 +17,7 @@ import org.hyperledger.fabric.contract.annotation.License;
 import org.hyperledger.fabric.contract.annotation.Transaction;
 import org.hyperledger.fabric.shim.ChaincodeException;
 import org.hyperledger.fabric.shim.ChaincodeStub;
+import org.hyperledger.fabric.shim.ledger.CompositeKey;
 import org.hyperledger.fabric.shim.ledger.KeyModification;
 import org.hyperledger.fabric.shim.ledger.KeyValue;
 import org.hyperledger.fabric.shim.ledger.QueryResultsIterator;
@@ -69,9 +69,7 @@ public final class FabCar implements ContractInterface {
             throw new ChaincodeException(errorMessage, FabCarErrors.CAR_NOT_FOUND.toString());
         }
 
-        Car car = genson.deserialize(carState, Car.class);
-
-        return car;
+        return genson.deserialize(carState, Car.class);
     }
 
     /**
@@ -105,6 +103,7 @@ public final class FabCar implements ContractInterface {
         }
     }
 
+
     /**
      * Creates a new car on the ledger.
      *
@@ -131,7 +130,7 @@ public final class FabCar implements ContractInterface {
         Car car = new Car(make, model, color, owner);
         carState = genson.serialize(car);
         stub.putStringState(key, carState);
-        //stub.getTxId();
+
         return car;
     }
 
@@ -147,7 +146,7 @@ public final class FabCar implements ContractInterface {
 
         final String startKey = "";
         final String endKey = "";
-        List<CarQueryResult> queryResults = new ArrayList<CarQueryResult>();
+        List<CarQueryResult> queryResults = new ArrayList<>();
 
         QueryResultsIterator<KeyValue> results = stub.getStateByRange(startKey, endKey);
 
@@ -156,9 +155,7 @@ public final class FabCar implements ContractInterface {
             queryResults.add(new CarQueryResult(result.getKey(), car));
         }
 
-        CarQueryResult[] response = queryResults.toArray(new CarQueryResult[queryResults.size()]);
-
-        return response;
+        return queryResults.toArray(new CarQueryResult[0]);
     }
 
     /**
@@ -200,7 +197,7 @@ public final class FabCar implements ContractInterface {
     @Transaction
     public String getHistoryForAsset(final Context ctx, final String key) {
         ChaincodeStub stub = ctx.getStub();
-// If Car is deleted thisi will be empty enven if we have a well defined history for that car
+// If Car is deleted this will be empty enven if we have a well defined history for that car
 //        String carState = stub.getStringState(key);
 //        if (carState.isEmpty()) {
 //            String errorMessage = String.format("Car %s does not exist", key);
@@ -209,7 +206,7 @@ public final class FabCar implements ContractInterface {
 //        }
 
         QueryResultsIterator<KeyModification> results = stub.getHistoryForKey(key);
-        if (results == null) {
+        if (results == null ) {
             String errorMessage = String.format("Car %s does not exist", key);
             System.out.println(errorMessage);
             throw new ChaincodeException(errorMessage, FabCarErrors.CAR_NOT_FOUND.toString());
@@ -222,7 +219,7 @@ public final class FabCar implements ContractInterface {
                 buffer.append(",");
             }
             buffer.append("{\"TxId\":");
-            buffer.append("\"" + result.getTxId() + "\"");
+            buffer.append("\"").append(result.getTxId()).append("\"");
 
             buffer.append(", \"Value\":");
             // if it was a delete operation on given key, then we need to set the
@@ -235,10 +232,10 @@ public final class FabCar implements ContractInterface {
             }
 
             buffer.append(", \"Timestamp\":");
-            buffer.append("\"" + result.getTimestamp() + "\"");
+            buffer.append("\"").append(result.getTimestamp()).append("\"");
 
             buffer.append(", \"IsDeleted\":");
-            buffer.append("\"" + result.isDeleted() + "\"");
+            buffer.append("\"").append(result.isDeleted()).append("\"");
 
             buffer.append("}");
             bufferMemberWritten = true;
@@ -272,6 +269,8 @@ public final class FabCar implements ContractInterface {
         }
 
         stub.delState(key);
-        return String.format("{\"Message\":\"Car '%s' has been successfully deleted.\", \"TxId\":\"%s\"}", key, stub.getTxId());
+        return String.format("Car '%s' has been successfully deleted.", key);
     }
+
+
 }

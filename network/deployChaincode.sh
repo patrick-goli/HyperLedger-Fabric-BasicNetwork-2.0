@@ -216,7 +216,7 @@ chaincodeQuery() {
 
 }
 
-#Run this function if you add any new lines of code in chaincode
+# #Run this function if you add any new lines of code in chaincode
 presetup
 
 packageChaincode
