@@ -17,7 +17,6 @@ import org.hyperledger.fabric.contract.annotation.License;
 import org.hyperledger.fabric.contract.annotation.Transaction;
 import org.hyperledger.fabric.shim.ChaincodeException;
 import org.hyperledger.fabric.shim.ChaincodeStub;
-import org.hyperledger.fabric.shim.ledger.CompositeKey;
 import org.hyperledger.fabric.shim.ledger.KeyModification;
 import org.hyperledger.fabric.shim.ledger.KeyValue;
 import org.hyperledger.fabric.shim.ledger.QueryResultsIterator;
@@ -146,7 +145,7 @@ public final class FabCar implements ContractInterface {
 
         final String startKey = "";
         final String endKey = "";
-        List<CarQueryResult> queryResults = new ArrayList<CarQueryResult>();
+        List<CarQueryResult> queryResults = new ArrayList<>();
 
         QueryResultsIterator<KeyValue> results = stub.getStateByRange(startKey, endKey);
 
