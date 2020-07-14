@@ -1,4 +1,4 @@
-const { Gateway, Wallets, } = require('fabric-network');
+const {Gateway, Wallets,} = require('fabric-network');
 const fs = require('fs');
 const path = require("path")
 const log4js = require('log4js');
@@ -26,7 +26,6 @@ const query = async (channelName, chaincodeName, args, fcn, username, org_name) 
         if (!identity) {
             console.log(`An identity for the user ${username} does not exist in the wallet, so registering user`);
             await helper.getRegisteredUser(username, org_name, true)
-            identity = await wallet.get(username);
             console.log('Run the registerUser.js application before retrying');
             return;
         }
@@ -34,7 +33,7 @@ const query = async (channelName, chaincodeName, args, fcn, username, org_name) 
         // Create a new gateway for connecting to our peer node.
         const gateway = new Gateway();
         await gateway.connect(ccp, {
-            wallet, identity: username, discovery: { enabled: true, asLocalhost: true }
+            wallet, identity: username, discovery: {enabled: true, asLocalhost: true}
         });
 
         // Get the network (channel) our contract is deployed to.
@@ -43,15 +42,19 @@ const query = async (channelName, chaincodeName, args, fcn, username, org_name) 
         // Get the contract from the network.
         const contract = network.getContract(chaincodeName);
         let result;
-
-        if (fcn == "queryCar" || fcn=="getHistoryForAsset") {
-            result = await contract.evaluateTransaction(fcn, args[0]);
-
-        } else if (fcn == "readPrivateCar" || fcn == "queryPrivateDataHash"
-        || fcn == "collectionCarPrivateDetails") {
-            result = await contract.evaluateTransaction(fcn, args[0], args[1]);
-            // return result
-
+        switch (fcn) {
+            case "queryCar":
+            case "getHistoryForAsset":
+                result = await contract.evaluateTransaction(fcn, args[0]);
+                break;
+            case "queryAllCars":
+                result = await contract.evaluateTransaction(fcn);
+                break;
+            default:
+                return `Unknown function ${fcn}`;
+        }
+        if (!result) {
+            return `Failed to evaluate transaction with function :${fcn}`;
         }
         console.log(result)
         console.log(`Transaction has been evaluated, result is: ${result.toString()}`);

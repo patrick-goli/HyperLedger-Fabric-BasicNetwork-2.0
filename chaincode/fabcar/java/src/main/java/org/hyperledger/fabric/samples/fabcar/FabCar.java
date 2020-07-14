@@ -141,22 +141,25 @@ public final class FabCar implements ContractInterface {
      * @return array of Cars found on the ledger
      */
     @Transaction()
-    public CarQueryResult[] queryAllCars(final Context ctx) {
+    public String queryAllCars(final Context ctx) {
         ChaincodeStub stub = ctx.getStub();
 
         final String startKey = "";
         final String endKey = "";
-        List<CarQueryResult> queryResults = new ArrayList<>();
+        List<CarQueryResult> queryResults = new ArrayList<CarQueryResult>();
 
         QueryResultsIterator<KeyValue> results = stub.getStateByRange(startKey, endKey);
 
-        for (KeyValue result : results) {
+        for (KeyValue result: results) {
             Car car = genson.deserialize(result.getStringValue(), Car.class);
             queryResults.add(new CarQueryResult(result.getKey(), car));
         }
 
-        return queryResults.toArray(new CarQueryResult[0]);
+        final String response = genson.serialize(queryResults);
+
+        return response;
     }
+
 
     /**
      * Changes the owner of a car on the ledger.
@@ -269,7 +272,7 @@ public final class FabCar implements ContractInterface {
         }
 
         stub.delState(key);
-        return String.format("Car '%s' has been successfully deleted.", key);
+        return String.format("[\"Car '%s' has been successfully deleted.\"]", key);
     }
 
 

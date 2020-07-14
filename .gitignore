@@ -69,7 +69,6 @@ web_modules/
 .yarn-integrity
 
 # dotenv environment variables file
-.env
 .env.test
 
 # parcel-bundler cache (https://parceljs.org/)
@@ -131,7 +130,6 @@ modified_config.pb
 addOrderer/crypto-config
 config_update_in_envelope.pb
 config.pb
-network/addOrg4/.env
 
 network/channel/create-certificate-with-ca/crypto-config-ca
 network/channel/create-certificate-with-ca/fabric-ca

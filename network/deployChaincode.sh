@@ -237,5 +237,8 @@ sleep 5
 chaincodeInvokeInit
 sleep 5
 chaincodeInvoke
-sleep 1
-chaincodeQuery
+ sleep 1
+ chaincodeQuery
+
+#setGlobals 1 0
+#peer chaincode query -C $CHANNEL_NAME -n ${CC_NAME} -c '{"Args":["queryAllCars"]}'

@@ -10,10 +10,10 @@ const util = require('util');
 
 const getCCP = async (org) => {
     let ccpPath;
-    if (org == "Org1") {
+    if (org === "Org1") {
         ccpPath = path.resolve(__dirname, '..', 'config', 'connection-org1.json');
 
-    } else if (org == "Org2") {
+    } else if (org === "Org2") {
         ccpPath = path.resolve(__dirname, '..', 'config', 'connection-org2.json');
     } else
         return null
@@ -24,10 +24,10 @@ const getCCP = async (org) => {
 
 const getCaUrl = async (org, ccp) => {
     let caURL;
-    if (org == "Org1") {
+    if (org === "Org1") {
         caURL = ccp.certificateAuthorities['ca.org1.example.com'].url;
 
-    } else if (org == "Org2") {
+    } else if (org === "Org2") {
         caURL = ccp.certificateAuthorities['ca.org2.example.com'].url;
     } else
         return null
@@ -37,10 +37,10 @@ const getCaUrl = async (org, ccp) => {
 
 const getWalletPath = async (org) => {
     let walletPath;
-    if (org == "Org1") {
+    if (org === "Org1") {
         walletPath = path.join(process.cwd(), 'org1-wallet');
 
-    } else if (org == "Org2") {
+    } else if (org === "Org2") {
         walletPath = path.join(process.cwd(), 'org2-wallet');
     } else
         return null
@@ -50,7 +50,7 @@ const getWalletPath = async (org) => {
 
 
 const getAffiliation = async (org) => {
-    return org == "Org1" ? 'org1.department1' : 'org2.department1'
+    return org === "Org1" ? 'org1.department1' : 'org2.department1'
 }
 
 const getRegisteredUser = async (username, userOrg, isJson) => {
@@ -66,11 +66,10 @@ const getRegisteredUser = async (username, userOrg, isJson) => {
     const userIdentity = await wallet.get(username);
     if (userIdentity) {
         console.log(`An identity for the user ${username} already exists in the wallet`);
-        var response = {
+        return {
             success: true,
             message: username + ' enrolled Successfully',
-        };
-        return response
+        }
     }
 
     // Check to see if we've already enrolled the admin user.
@@ -109,7 +108,7 @@ const getRegisteredUser = async (username, userOrg, isJson) => {
     // const enrollment = await ca.enroll({ enrollmentID: username, enrollmentSecret: secret, attr_reqs: [{ name: 'role', optional: false }] });
 
     let x509Identity;
-    if (userOrg == "Org1") {
+    if (userOrg === "Org1") {
         x509Identity = {
             credentials: {
                 certificate: enrollment.certificate,
@@ -118,7 +117,7 @@ const getRegisteredUser = async (username, userOrg, isJson) => {
             mspId: 'Org1MSP',
             type: 'X.509',
         };
-    } else if (userOrg == "Org2") {
+    } else if (userOrg === "Org2") {
         x509Identity = {
             credentials: {
                 certificate: enrollment.certificate,
@@ -132,20 +131,19 @@ const getRegisteredUser = async (username, userOrg, isJson) => {
     await wallet.put(username, x509Identity);
     console.log(`Successfully registered and enrolled admin user ${username} and imported it into the wallet`);
 
-    var response = {
+    return {
         success: true,
         message: username + ' enrolled Successfully',
-    };
-    return response
+    }
 }
 
 
 const getCaInfo = async (org, ccp) => {
     let caInfo
-    if (org == "Org1") {
+    if (org === "Org1") {
         caInfo = ccp.certificateAuthorities['ca.org1.example.com'];
 
-    } else if (org == "Org2") {
+    } else if (org === "Org2") {
         caInfo = ccp.certificateAuthorities['ca.org2.example.com'];
     } else
         return null
@@ -178,7 +176,7 @@ const enrollAdmin = async (org, ccp) => {
         // Enroll the admin user, and import the new identity into the wallet.
         const enrollment = await ca.enroll({enrollmentID: 'admin', enrollmentSecret: 'adminpw'});
         let x509Identity;
-        if (org == "Org1") {
+        if (org === "Org1") {
             x509Identity = {
                 credentials: {
                     certificate: enrollment.certificate,
@@ -187,7 +185,7 @@ const enrollAdmin = async (org, ccp) => {
                 mspId: 'Org1MSP',
                 type: 'X.509',
             };
-        } else if (org == "Org2") {
+        } else if (org === "Org2") {
             x509Identity = {
                 credentials: {
                     certificate: enrollment.certificate,
@@ -201,9 +199,6 @@ const enrollAdmin = async (org, ccp) => {
 
         await wallet.put('admin', x509Identity);
         console.log('Successfully enrolled admin user "admin" and imported it into the wallet');
-        return
-
-
     } catch (error) {
         console.error(`Failed to enroll admin user "admin": ${error}`);
     }

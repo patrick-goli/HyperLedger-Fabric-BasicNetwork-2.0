@@ -1,6 +1,7 @@
 'use strict';
 const log4js = require('log4js');
 const logger = log4js.getLogger('BasicNetwork');
+logger.level="debug";
 const bodyParser = require('body-parser');
 const http = require('http')
 const util = require('util');
@@ -42,7 +43,7 @@ app.use((req, res, next) => {
     if (req.originalUrl.indexOf('/users') >= 0) {
         return next();
     }
-    var token = req.token;
+    const token = req.token;
     jwt.verify(token, app.get('secret'), (err, decoded) => {
         if (err) {
             res.send({
@@ -51,7 +52,6 @@ app.use((req, res, next) => {
                     'token returned from /users call in the authorization header ' +
                     ' as a Bearer token'
             });
-            return;
         } else {
             req.username = decoded.username;
             req.orgname = decoded.orgName;
@@ -61,23 +61,23 @@ app.use((req, res, next) => {
     });
 });
 
-var server = http.createServer(app).listen(port, function () { console.log(`Server started on ${port}`) });
-logger.info('****************** SERVER STARTED ************************');
-logger.info('***************  http://%s:%s  ******************', host, port);
+const server = http.createServer(app).listen(port, function () {
+    logger.info('****************** SERVER STARTED ************************');
+    logger.info('***************  http://%s:%s  ******************', host, port);
+});
 server.timeout = 240000;
 
 function getErrorMessage(field) {
-    var response = {
+    return {
         success: false,
         message: field + ' field is missing or Invalid in the request'
     };
-    return response;
 }
 
 // Register and enroll user
 app.post('/users', async function (req, res) {
-    var username = req.body.username;
-    var orgName = req.body.orgName;
+    const username = req.body.username;
+    const orgName = req.body.orgName;
     logger.debug('End point : /users');
     logger.debug('User name : ' + username);
     logger.debug('Org name  : ' + orgName);
@@ -90,7 +90,7 @@ app.post('/users', async function (req, res) {
         return;
     }
 
-    var token = jwt.sign({
+    const token = jwt.sign({
         exp: Math.floor(Date.now() / 1000) + parseInt(constants.jwt_expiretime),
         username: username,
         orgName: orgName
@@ -114,12 +114,12 @@ app.post('/users', async function (req, res) {
 app.post('/channels/:channelName/chaincodes/:chaincodeName', async function (req, res) {
     try {
         logger.debug('==================== INVOKE ON CHAINCODE ==================');
-        var peers = req.body.peers;
-        var chaincodeName = req.params.chaincodeName;
-        var channelName = req.params.channelName;
-        var fcn = req.body.fcn;
-        var args = req.body.args;
-        var transient = req.body.transient;
+        const peers = req.body.peers;
+        const chaincodeName = req.params.chaincodeName;
+        const channelName = req.params.channelName;
+        const fcn = req.body.fcn;
+        const args = req.body.args;
+        const transient = req.body.transient;
         console.log(`Transient data is ;${transient}`)
         logger.debug('channelName  : ' + channelName);
         logger.debug('chaincodeName : ' + chaincodeName);
@@ -166,8 +166,8 @@ app.get('/channels/:channelName/chaincodes/:chaincodeName', async function (req,
     try {
         logger.debug('==================== QUERY BY CHAINCODE ==================');
 
-        var channelName = req.params.channelName;
-        var chaincodeName = req.params.chaincodeName;
+        const channelName = req.params.channelName;
+        const chaincodeName = req.params.chaincodeName;
         console.log(`chaincode name is :${chaincodeName}`)
         let args = req.query.args;
         let fcn = req.query.fcn;
