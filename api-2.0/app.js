@@ -31,7 +31,7 @@ app.use(bodyParser.urlencoded({
 app.set('secret', appSecret);
 app.use(expressJWT({
     secret: appSecret,
-    algorithms:["HS256"]
+    algorithms:["HS384"]
 }).unless({
     path: ['/users']
 }));
@@ -50,7 +50,7 @@ app.use((req, res, next) => {
                 success: false,
                 message: 'Failed to authenticate token. Make sure to include the ' +
                     'token returned from /users call in the authorization header ' +
-                    ' as a Bearer token'
+                    'as a Bearer token'
             });
         } else {
             req.username = decoded.username;

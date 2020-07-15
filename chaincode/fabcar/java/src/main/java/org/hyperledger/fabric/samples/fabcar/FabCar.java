@@ -129,7 +129,6 @@ public final class FabCar implements ContractInterface {
         Car car = new Car(make, model, color, owner);
         carState = genson.serialize(car);
         stub.putStringState(key, carState);
-
         return car;
     }
 

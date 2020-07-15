@@ -212,6 +212,7 @@ chaincodeQuery() {
 
   # check history for deletion
   sleep 5
+  setGlobals 3 0
   peer chaincode query -C $CHANNEL_NAME -n ${CC_NAME} -c '{"function": "getHistoryForAsset","Args":["CAR001"]}'
 
 }
@@ -239,4 +240,3 @@ sleep 5
 chaincodeInvoke
 sleep 1
 chaincodeQuery
-

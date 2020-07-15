@@ -8,6 +8,7 @@ function printHelp() {
   echo "      - 'createChannel' - create and join a channel after the network is created"
   echo "      - 'deployCC' - deploy the fabcar chaincode on the channel"
   echo "      - 'down' - clear the network with docker-compose down"
+  echo "      - 'clean' - first down then also clean all docker images"
   echo "      - 'restart' - restart the network"
 }
 
